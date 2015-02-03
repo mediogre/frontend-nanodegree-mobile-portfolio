@@ -1,0 +1,24 @@
+{
+  "name": "udacity4",
+  "version": "1.0.0",
+  "description": "Udacity nano-frontend project 4",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mediogre/frontend-nanodegree-mobile-portfolio.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mediogre/frontend-nanodegree-mobile-portfolio/issues"
+  },
+  "homepage": "https://github.com/mediogre/frontend-nanodegree-mobile-portfolio",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-contrib-htmlmin": "^0.3.0"
+  }
+}
