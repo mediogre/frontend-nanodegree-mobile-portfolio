@@ -399,7 +399,7 @@ var pizzaElementGenerator = function(i) {
 };
 
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
-var resizePizzas = function(size) { 
+var resizePizzas = function(size) {
   window.performance.mark("mark_start_resize");   // User Timing API function
 
   // Changes the value for the size of the pizza above the slider
@@ -421,15 +421,6 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
-  // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
-  function determineNewWidth (elem, newsize, windowwidth) {
-    var oldwidth = elem.offsetWidth;
-    var oldsize = oldwidth / windowwidth;
-
-    var dx = (newsize - oldsize) * windowwidth;
-    return (oldwidth + dx) + 'px';
-  }
-
   // Changes the slider value to a percent width
   function sizeSwitcher (size) {
     switch(size) {
@@ -447,21 +438,30 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    var pizzaContainers = document.querySelectorAll(".randomPizzaContainer");
-    var windowwidth = document.querySelector("#randomPizzas").offsetWidth;
-    var len = pizzaContainers.length;
-    var ary = new Array(len);
-    var i, dx;
+    // querySelectorAll and querySelector were replaced with more specific methods
+    // not that it really matters since we are not calling them from inside the loop
+
+    // getElementsByClassName should be faster than querySelectorAll
+    // (jsperf.com/getelementsbyclassname-vs-queryselectorall/18)
+    var pizzaContainers = document.getElementsByClassName("randomPizzaContainer");
+
+    // similarly getElementById should be better than querySelector
+    // (jsperf.com/getelementbyid-vs-queryselector/11)
+    var windowWidth = document.getElementById("randomPizzas").offsetWidth;
 
     // we can determine newsize once (since all pizza containers have the same size)
-    var newsize = sizeSwitcher(size);
+    var newSize = sizeSwitcher(size);
 
-    for (i = 0; i < len; i++) {
-      ary[i] = determineNewWidth(pizzaContainers[i], newsize, windowwidth);
-    }
+    // the original formula from determineDx simplifies (by applying elementary algebra)
+    // to just windowWidth * (1 / new_number_of_columns)
+    // so we can just calculate newWidth of each pizzaContainer once
+    // and write DOM of each element without even a separate pass for reading it (DOM)
+    var newWidth = (newSize * windowWidth) + 'px';
 
-    for (i = 0; i < len; i++) {
-      pizzaContainers[i].style.width = ary[i];
+    var len = pizzaContainers.length;
+    var i = 0;
+    for (; i < len; i++) {
+      pizzaContainers[i].style.width = newWidth;
     }
   }
 
