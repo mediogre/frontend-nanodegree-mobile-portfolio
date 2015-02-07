@@ -6,6 +6,23 @@ To get started, check out the repository, inspect the code,
 
 ### Getting started
 
+* index.html optimization
+- style.css was inlined (most of styles seem to apply to above-the-fold content (which is most of this page))
+- print.css was made non-render-blocking by add media query
+- both google/analytics.js and js/perfmatters.js were marked as async in order to not block DOM construction and moved to the bottom of the document
+- webfonts references were moved similarly to the bottom of the document to not render-block abofe-the-fold content (need to experiment with async webfont loader too).
+- grunt-based building "pipeline" was created to cement everything:
+  - huge pizzeria.jpg reference was replaced with reference for "thumbnail" version of it (100x75)
+  - grunt-contrib-imagemin is used to resize the image
+  - grunt-contrib-imagemin then optimizes the images by compressing them
+  - html (with inlined css) is then minified with htmlmin
+  - js is similarly minified with uglify
+- the final result appears in a separate build directory (which is then ready to be served)
+- the final result is pushed to mediogre.github.io (github pages for my account) and shows 95 mobile and 97 desktop PageSpeed score.
+
+* pizza.html optimization
+
+
 ####Part 1: Optimize PageSpeed Insights score for index.html
 
 Some useful tips to help you get started:
