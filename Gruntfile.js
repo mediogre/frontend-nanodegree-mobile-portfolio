@@ -11,7 +11,7 @@ module.exports = function(grunt) {
     },
 
     imagemin: {
-      dist: {
+      index: {
         options: {
           optimizationLevel: 5
         },
@@ -33,11 +33,23 @@ module.exports = function(grunt) {
           src: ['**/*.{png,jpg}'],
           dest: 'build/img/'
         }]
+      },
+
+      pizza: {
+        options: {
+          optimizationLevel: 5
+        },
+        files: [{
+          expand: true,
+          cwd: 'build/img_t',
+          src: ['**/*.{png,jpg}'],
+          dest: 'build/views/images/'
+        }]
       }
     },
 
     htmlmin: {
-      dist: {
+      index: {
         options: {
           removeComments: true,
           collapseWhitespace: true,
@@ -61,6 +73,26 @@ module.exports = function(grunt) {
         files: {
           'build/img_t/pizzeria_thumb.jpg': 'src/views/images/pizzeria.jpg'
         }
+      },
+
+      pizza: {
+        options: {
+          width: 164,
+          height: 213
+        },
+        files: {
+          'build/img_t/pizza.png': 'src/views/images/pizza.png'
+        }
+      },
+
+      pizzeria: {
+        options: {
+          width: 360,
+          height: 270
+        },
+        files: {
+          'build/img_t/pizzeria.jpg': 'src/views/images/pizzeria.jpg'
+        }
       }
     },
 
@@ -83,15 +115,22 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   grunt.registerTask('index.html', ['copy',
-                                    'imagemin:dist',
+                                    'imagemin:index',
                                     'image_resize:pizzeria_thumb',
                                     'imagemin:thumbs',
-                                    'htmlmin',
+                                    'htmlmin:index',
                                     'uglify:perfmatters.js',
                                     'clean'
                                    ]);
 
+  grunt.registerTask('pizza', ['copy',
+                               'image_resize:pizza',
+                               'image_resize:pizzeria',
+                               'imagemin:pizza',
+                               'clean'
+                              ]);
+
   grunt.registerTask('default', function() {
     grunt.log.writeln("Hi there");
   });
-}
+};
