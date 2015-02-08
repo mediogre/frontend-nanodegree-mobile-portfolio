@@ -514,31 +514,24 @@ function updatePositions() {
   window.performance.mark("mark_start_frame");
 
   var items = pizzaItems;
-  var maxHeight = screen.height;
-  var currentRow = -pizzaRowHeight;
+  var len = items.length;
 
   // precalculate all possible phases beforehand
-  var phases = [];
-  for (i = 0; i < 5; i++) {
-    phases[i] = Math.sin(pizzaScrollTop + i) * 100;
-  }
+  // var phases = new Array(5);
+  // for (i = 0; i < 5; i++) {
+  //   phases[i] = Math.sin(pizzaScrollTop + i) * 100;
+  // }
 
-  for (i = 0; i < items.length; i++) {
-    // check when we showing next row and break out of the loop
-    // if that row is below visible screen
-    if (i % pizzaCols === 0) {
-      currentRow += pizzaRowHeight;
-      if (currentRow > maxHeight) {
-        // no need to "animate" those rows that can't be (possibly) seen on the screen
-        break;
-      }
-    }
-
+  for (i = 0; i < len; i++) {
     // get the precalculated phase and animate
-    var phase = phases[i % 5].toFixed(2);
-    // items[i].style.left = (pizzaLefts[i] + phase) + 'px';
+    // var phase = phases[i % 5].toFixed(2);
+    //    items[i].style.left = (pizzaLefts[i] + phase) + 'px';
+
+    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+    items[i].style.left = pizzaLefts[i] + 100 * phase + 'px';
+
     // items[i].style.transform = 'translate3d(' + phase + 'px, 0, 0)';
-    items[i].style.transform = 'translateX(' + phase + 'px)';
+    //items[i].style.transform = 'translateX(' + phase + 'px)';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -554,16 +547,25 @@ function updatePositions() {
   pizzaTicking = false;
 }
 
-var pizzaItems = new Array(200);
-var pizzaLefts = new Array(200);
+// all moving pizzas will be "cached" in this array
+var pizzaItems;
+
+// left positions of each column is "cached" in this array as well
+var pizzaLefts;
+
+// latest known scroll position
 var pizzaScrollTop = 0;
+
+// the flag used to avoid multiple requestAnimationFrames
 var pizzaTicking = false;
 
+// onScroll handler - saves scroll position and requests animation to happen
 function pizzaOnScroll() {
   pizzaScrollTop = document.body.scrollTop / 1250;
   pizzaRequestTick();
 }
 
+// tries to request animation frame unless there's one already in progress
 function pizzaRequestTick() {
   if (!pizzaTicking) {
     requestAnimationFrame(updatePositions);
@@ -571,7 +573,7 @@ function pizzaRequestTick() {
   }
 }
 
-// run our scroll handler which will request next animation frame
+// prepare our scroll handler which will request next animation frame
 window.addEventListener('scroll', pizzaOnScroll);
 
 // Generates the sliding pizzas when the page loads.
@@ -580,10 +582,26 @@ document.addEventListener('DOMContentLoaded', function() {
   var s          = pizzaRowHeight;
   var pizzasRoot = document.getElementById("movingPizzas1");
 
-  for (var i = 0; i < 200; i++) {
-    var elem = document.createElement('img');
+  var maxHeight = screen.height;
+  var currentRow = -pizzaRowHeight;
 
+  var pizzaRows = Math.ceil(maxHeight / pizzaRowHeight);
+  var pizzaTotal = pizzaRows * cols;
+
+  pizzaItems = new Array(pizzaTotal);
+  // pizzaLefts = new Array(cols);
+  pizzaLefts = new Array(pizzaTotal);
+  var i, elem;
+
+  // fill in left position of each pizza column
+  // for (i = 0; i < cols; i++) {
+  //   pizzaLefts[i] = i * s;
+  // }
+
+  for (i = 0; i < pizzaTotal; i++) {
     pizzaLefts[i] = (i % cols) * s;
+
+    elem = document.createElement('img');
 
     elem.className    = 'mover';
     elem.src          = "images/pizza_mover.png";
@@ -591,16 +609,17 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.height = "100px";
     elem.style.top    = (Math.floor(i / cols) * s) + 'px';
     elem.style.left   = pizzaLefts[i] + 'px';
-//    elem.style.transform = 'translate3d(' + pizzaLefts[i] + 'px, ' + (Math.floor(i / cols) * s) + 'px, 0)';
+
     // hint to the browser that we will animate this element
-    elem.style.willChange = 'transform';
+    // elem.style.willChange = 'transform';
 
     pizzaItems[i] = elem;
+    pizzasRoot.appendChild(elem);
   }
 
-  for (i = 0; i < 200; i++) {
-    pizzasRoot.appendChild(pizzaItems[i]);
-  }
+//  for (i = 0; i < 200; i++) {
+//    pizzasRoot.appendChild(pizzaItems[i]);
+//  }
 
   // render initial pizzas
   pizzaOnScroll();
