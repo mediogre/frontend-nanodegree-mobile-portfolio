@@ -535,8 +535,10 @@ function updatePositions() {
     }
 
     // get the precalculated phase and animate
-    var phase = phases[i % 5];
-    items[i].style.left = (pizzaLefts[i] + phase) + 'px';
+    var phase = phases[i % 5].toFixed(2);
+    // items[i].style.left = (pizzaLefts[i] + phase) + 'px';
+    // items[i].style.transform = 'translate3d(' + phase + 'px, 0, 0)';
+    items[i].style.transform = 'translateX(' + phase + 'px)';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -589,6 +591,9 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.height = "100px";
     elem.style.top    = (Math.floor(i / cols) * s) + 'px';
     elem.style.left   = pizzaLefts[i] + 'px';
+//    elem.style.transform = 'translate3d(' + pizzaLefts[i] + 'px, ' + (Math.floor(i / cols) * s) + 'px, 0)';
+    // hint to the browser that we will animate this element
+    elem.style.willChange = 'transform';
 
     pizzaItems[i] = elem;
   }
