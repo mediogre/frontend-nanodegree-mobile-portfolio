@@ -61,6 +61,20 @@ module.exports = function(grunt) {
         files: {
           'build/index.html': 'src/index.html'
         }
+      },
+
+      pizza: {
+        options: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          collapseBooleanAttributes: true,
+          minifyCSS: true,
+          minifyJS: true
+        },
+        files: {
+          'build/views/pizza.html': 'src/views/pizza.html'
+        }
       }
     },
 
@@ -107,9 +121,15 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      "perfmatters.js": {
+      'perfmatters.js': {
         files: {
           'build/js/perfmatters.js': 'src/js/perfmatters.js'
+        }
+      },
+
+      'main.js': {
+        files: {
+          'build/views/js/main.js': 'src/views/js/main.js'
         }
       }
     },
@@ -138,10 +158,14 @@ module.exports = function(grunt) {
                                'image_resize:pizza_mover',
                                'image_resize:pizzeria',
                                'imagemin:pizza',
+                               'htmlmin:pizza',
+                               'uglify:main.js',
                                'clean'
                               ]);
 
   grunt.registerTask('default', function() {
-    grunt.log.writeln("Hi there");
+    grunt.log.writeln("There are two tasks to run:");
+    grunt.log.writeln("grunt index.html - to build index.html");
+    grunt.log.writeln("grunt pizza      - to build pizza.html");
   });
 };
