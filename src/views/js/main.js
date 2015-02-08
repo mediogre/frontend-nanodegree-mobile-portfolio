@@ -509,16 +509,23 @@ var pizzaCols      = 8;
 var pizzaRowHeight = 256;
 
 // Moves the sliding background pizzas based on scroll position
-function updatePositions() {
+function updatePositions(top) {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  var top = (document.body.scrollTop / 1250);
   var items = pizzaItems;
   var maxHeight = screen.height;
   var currentRow = -pizzaRowHeight;
 
-  for (var i = 0; i < items.length; i++) {
+  // precalculate all possible phases beforehand
+  var phases = [];
+  for (i = 0; i < 5; i++) {
+    phases[i] = Math.sin(top + i) * 100;
+  }
+
+  for (i = 0; i < items.length; i++) {
+    // check when we showing next row and break out of the loop
+    // if that row is below visible screen
     if (i % pizzaCols === 0) {
       currentRow += pizzaRowHeight;
       if (currentRow > maxHeight) {
@@ -527,8 +534,9 @@ function updatePositions() {
       }
     }
 
-    var phase = Math.sin(top + (i % 5));
-    items[i].style.left = pizzaLefts[i] + 100 * phase + 'px';
+    // get the precalculated phase and animate
+    var phase = phases[i % 5];
+    items[i].style.left = (pizzaLefts[i] + phase) + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -542,7 +550,7 @@ function updatePositions() {
 }
 
 // runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
+window.addEventListener('scroll', function() {updatePositions(document.body.scrollTop / 1250);});
 
 var pizzaItems = new Array(200);
 var pizzaLefts = new Array(200);
@@ -572,5 +580,5 @@ document.addEventListener('DOMContentLoaded', function() {
     pizzasRoot.appendChild(pizzaItems[i]);
   }
 
-  updatePositions();
+  updatePositions(document.body.scrollTop / 1250);
 });
