@@ -509,7 +509,7 @@ var pizzaCols      = 8;
 var pizzaRowHeight = 256;
 
 // Moves the sliding background pizzas based on scroll position
-function updatePositions(top) {
+function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
@@ -520,7 +520,7 @@ function updatePositions(top) {
   // precalculate all possible phases beforehand
   var phases = [];
   for (i = 0; i < 5; i++) {
-    phases[i] = Math.sin(top + i) * 100;
+    phases[i] = Math.sin(pizzaScrollTop + i) * 100;
   }
 
   for (i = 0; i < items.length; i++) {
@@ -547,13 +547,30 @@ function updatePositions(top) {
     var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
     logAverageFrame(timesToUpdatePosition);
   }
-}
 
-// runs updatePositions on scroll
-window.addEventListener('scroll', function() {updatePositions(document.body.scrollTop / 1250);});
+  // we are finished - next scrolls can rAF now too
+  pizzaTicking = false;
+}
 
 var pizzaItems = new Array(200);
 var pizzaLefts = new Array(200);
+var pizzaScrollTop = 0;
+var pizzaTicking = false;
+
+function pizzaOnScroll() {
+  pizzaScrollTop = document.body.scrollTop / 1250;
+  pizzaRequestTick();
+}
+
+function pizzaRequestTick() {
+  if (!pizzaTicking) {
+    requestAnimationFrame(updatePositions);
+    pizzaTicking = true;
+  }
+}
+
+// run our scroll handler which will request next animation frame
+window.addEventListener('scroll', pizzaOnScroll);
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
@@ -580,5 +597,6 @@ document.addEventListener('DOMContentLoaded', function() {
     pizzasRoot.appendChild(pizzaItems[i]);
   }
 
-  updatePositions(document.body.scrollTop / 1250);
+  // render initial pizzas
+  pizzaOnScroll();
 });
