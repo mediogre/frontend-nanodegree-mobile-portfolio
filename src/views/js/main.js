@@ -513,22 +513,23 @@ function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
+  // precalculate all possible phases beforehand
+  var phases = new Array(5);
+  var top = (document.body.scrollTop / 1250);
+  for (i = 0; i < 5; i++) {
+    phases[i] = Math.sin(top + i) * 100;
+  }
+
   var items = pizzaItems;
   var len = items.length;
 
-  // precalculate all possible phases beforehand
-  // var phases = new Array(5);
-  // for (i = 0; i < 5; i++) {
-  //   phases[i] = Math.sin(pizzaScrollTop + i) * 100;
-  // }
-
   for (i = 0; i < len; i++) {
     // get the precalculated phase and animate
-    // var phase = phases[i % 5].toFixed(2);
-    //    items[i].style.left = (pizzaLefts[i] + phase) + 'px';
+    var phase = phases[i % 5];
+    items[i].style.left = pizzaLefts[i] + phase + 'px';
 
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = pizzaLefts[i] + 100 * phase + 'px';
+    // var phase = Math.sin( + (i % 5));
+    // items[i].style.left = pizzaLefts[i] + 100 * phase + 'px';
 
     // items[i].style.transform = 'translate3d(' + phase + 'px, 0, 0)';
     //items[i].style.transform = 'translateX(' + phase + 'px)';
