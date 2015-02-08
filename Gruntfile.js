@@ -85,6 +85,16 @@ module.exports = function(grunt) {
         }
       },
 
+      pizza_mover: {
+        options: {
+          width: 73,
+          height: 100
+        },
+        files: {
+          'build/img_t/pizza_mover.png': 'src/views/images/pizza.png'
+        }
+      },
+
       pizzeria: {
         options: {
           width: 360,
@@ -125,6 +135,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('pizza', ['copy',
                                'image_resize:pizza',
+                               'image_resize:pizza_mover',
                                'image_resize:pizzeria',
                                'imagemin:pizza',
                                'clean'
